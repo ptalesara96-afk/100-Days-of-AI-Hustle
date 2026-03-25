@@ -1,0 +1,7 @@
+# Open .gitignore and confirm this is there:
+.env
+venv/
+__pycache__/
+*.pyc
+outputs/
+.DS_Store
