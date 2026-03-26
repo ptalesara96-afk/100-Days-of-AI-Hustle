@@ -16,63 +16,84 @@ class StoryRequest:
     favourite_thing: str    # e.g. "dinosaurs"
 
 
-# ── 4-Layer prompt — same framework, different model ────
 def build_story_prompt(request: StoryRequest) -> str:
     return f"""
 ROLE:
-You are a warm, imaginative children's book author who has 
-written 200+ personalised storybooks for kids aged 3-8.
-You write simple, joyful stories where the child is always 
-the hero. Your language is age-appropriate and rhythmic.
+You are a warm, imaginative children's book author with
+200+ published personalised storybooks for kids aged 3-8.
+You write simple, joyful stories where the child is always
+the hero. Your language is rhythmic and age-appropriate.
 
 CONTEXT:
-You are writing a personalised storybook for a real child.
 Child's name: {request.child_name}
 Child's age: {request.age} years old
-Their favourite thing: {request.favourite_thing}
+Favourite thing: {request.favourite_thing}
 Story theme: {request.theme}
-This story will be printed as a physical book for the child.
-The child WILL see their own name on every page.
+This will be printed as a real book the child will keep.
 
-TASK:
-Write an 8-page children's storybook following these rules:
-1. Each page has exactly 2-3 sentences
-2. Use only simple words a {request.age}-year-old understands
-3. Use {request.child_name}'s name on every page naturally
-4. Include {request.favourite_thing} meaningfully in the plot
-5. Story structure: setup → problem → solution → happy ending
-6. Page 8 must end with a warm 1-line moral lesson
+CHAIN OF THOUGHT — Think through this first:
+Before writing, briefly plan:
+- What is {request.child_name}'s goal in this story?
+- What obstacle will they face?
+- How does {request.favourite_thing} help solve it?
+- What is the warm lesson at the end?
+Write your plan in 2 lines, then write the story.
 
-FORMAT:
-Return ONLY this structure, nothing else before or after:
+FEW-SHOT EXAMPLE — Match this quality exactly:
+(Example for a different child — do NOT copy this)
 
 PAGE 1:
-[2-3 sentences]
+Mia loved butterflies more than anything in the world.
+She could name every colour and every wing shape by heart.
+One morning, she found a tiny butterfly stuck in the rain.
 
 PAGE 2:
-[2-3 sentences]
+"Don't worry," said Mia softly, "I'll help you fly again."
+She made a little shelter from a big green leaf.
+The butterfly looked up at her with tiny grateful eyes.
+
+(End of example — now write {request.child_name}'s story)
+
+TASK:
+Write an 8-page story following these rules exactly:
+1. Each page: exactly 3 sentences. No more, no less.
+2. Words a {request.age}-year-old understands only.
+3. Use {request.child_name} by name on EVERY page.
+4. {request.favourite_thing} must appear in the plot
+   and help solve the main problem.
+5. Structure: Page 1-2 setup → Page 3-4 problem →
+   Page 5-6 challenge → Page 7 solution → Page 8 ending
+
+FORMAT:
+Return ONLY this — no preamble, no plan in output,
+no extra text before PAGE 1 or after MORAL:
+
+PAGE 1:
+[3 sentences]
+
+PAGE 2:
+[3 sentences]
 
 PAGE 3:
-[2-3 sentences]
+[3 sentences]
 
 PAGE 4:
-[2-3 sentences]
+[3 sentences]
 
 PAGE 5:
-[2-3 sentences]
+[3 sentences]
 
 PAGE 6:
-[2-3 sentences]
+[3 sentences]
 
 PAGE 7:
-[2-3 sentences]
+[3 sentences]
 
 PAGE 8:
-[2-3 sentences]
+[3 sentences]
 
-MORAL: [one warm sentence]
+MORAL: [One warm sentence beginning with "Remember:"]
 """
-
 
 # ── Call OpenAI GPT-4o-mini ─────────────────────────────
 def generate_story(request: StoryRequest) -> str:
