@@ -1,0 +1,11 @@
+{
+    "label": "📋 AI Standup Generator",
+    "type": "shell",
+    "command": "git standup",
+    "presentation": {
+        "reveal": "always",
+        "panel": "shared",
+        "focus": true
+    },
+    "problemMatcher": []
+}
