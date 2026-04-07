@@ -1,0 +1,893 @@
+# 🧠 AI Prompt Optimization Guide
+### From Vague → Precise → Production-Quality Output
+> Version 2.0 · Built during 100 Days of AI Hustle · Day 2
+> Updated: Added Few-Shot Prompting + Chain of Thought sections
+
+---
+
+## ⚡ QUICK REFERENCE — The 4-Layer Framework
+
+```
+LAYER 1 → ROLE     "You are a [specific expert]..."
+LAYER 2 → CONTEXT  "Here is the situation / codebase / constraints..."
+LAYER 3 → TASK     "Your specific job is to [numbered asks]..."
+LAYER 4 → FORMAT   "Return your answer as [exact structure]..."
+```
+
+> **Golden Rule:**
+> Vague prompt = AI decides what matters.
+> Specific prompt = YOU decide what matters.
+
+---
+
+## 🎯 ADVANCED TECHNIQUE 1 — FEW-SHOT PROMPTING
+
+### What Is It?
+
+Show the AI **1-2 examples of perfect output** BEFORE asking it
+to generate the real thing. The AI matches your example quality
+instead of guessing what "good" looks like.
+
+```
+┌─────────────────────────────────────────────────────────┐
+│  ZERO-SHOT (no examples)                               │
+│  "Write a commit message for this diff"                │
+│  → AI guesses your quality standard                   │
+│  → Output varies wildly every time                    │
+│                                                         │
+│  ONE-SHOT (1 example)                                  │
+│  "Here is an example of a perfect commit message:      │
+│   feat(api): add Pydantic validation to story endpoint │
+│   - Reject invalid age range (must be 3-10)            │
+│   - Strip whitespace from child name automatically     │
+│   Now write one for THIS diff: [diff]"                 │
+│  → AI matches your example exactly                    │
+│  → Consistent output every single time                │
+└─────────────────────────────────────────────────────────┘
+```
+
+### When To Use Few-Shot:
+
+```
+✅ USE when:
+- You need consistent FORMAT every time
+- The task has a specific quality bar
+- Zero-shot keeps giving wrong structure
+- You have a "house style" for output
+
+❌ SKIP when:
+- Simple factual questions
+- Task is fully defined by format alone
+- You genuinely want creative variety
+```
+
+---
+
+### FEW-SHOT EXAMPLES — By Use Case
+
+---
+
+#### USE CASE 1: Git Commit Messages
+
+```
+ROLE:
+You are a senior developer writing conventional commit messages.
+
+CONTEXT:
+Python FastAPI + Next.js children's storybook service.
+Team follows conventional commits strictly.
+
+FEW-SHOT EXAMPLES:
+Here are 2 examples of perfect commit messages for this project:
+
+Example 1 — Feature addition:
+feat(story): add few-shot examples to prompt builder
+
+- Add 2 reference pages showing target output quality
+- Ensures consistent 3-sentence structure per page
+- Reduces format errors from ~40% to near zero
+
+Example 2 — Bug fix:
+fix(api): handle empty child name in Pydantic validator
+
+- Add strip() before alpha check to catch whitespace-only names
+- Return 422 with message "Name cannot be empty or whitespace"
+- Prevents silent 500 crash on blank form submission
+
+(End of examples — now write a message for the diff below)
+
+TASK:
+Write ONE commit message for the following diff.
+Match the format and specificity of the examples above exactly.
+
+FORMAT:
+type(scope): description (max 72 chars)
+
+- what changed (specific)
+- why it changed (reason)
+- impact or note (what it fixes/enables)
+
+Git diff:
+[PASTE DIFF HERE]
+```
+
+---
+
+#### USE CASE 2: Code Review Comments
+
+```
+ROLE:
+You are a senior Python engineer doing PR code review.
+You write comments that teach, not just criticise.
+
+CONTEXT:
+Mid-level team. FastAPI backend. We value specificity.
+Every comment must explain WHY, not just WHAT.
+
+FEW-SHOT EXAMPLES:
+Here are 2 examples of perfect review comments:
+
+Example 1 — Security issue:
+🔴 HIGH: Hardcoded AWS credentials detected (line 12)
+
+What: AWS keys are embedded directly in the source code.
+Why it matters: Any developer with repo access — or anyone
+who finds this on GitHub — can access your S3 bucket.
+Bots scan GitHub for exposed keys within minutes of a push.
+
+Fix:
+# Remove this:
+aws_access_key_id="AKIAIOSFODNN7"
+
+# Replace with:
+aws_access_key_id=os.getenv("AWS_ACCESS_KEY_ID")
+
+And add to .env:
+AWS_ACCESS_KEY_ID=your_key_here
+
+Example 2 — Clean code issue:
+🟡 MEDIUM: Magic number used instead of named constant (line 34)
+
+What: File size limit "5000000" appears with no explanation.
+Why it matters: Future developers (including you in 6 months)
+won't know if this is bytes, KB, or MB. It also can't be
+changed in one place if the limit needs to update.
+
+Fix:
+# Remove this:
+if file.size < 5000000:
+
+# Replace with:
+MAX_FILE_SIZE_BYTES = 5 * 1024 * 1024  # 5MB
+if file.size < MAX_FILE_SIZE_BYTES:
+
+(End of examples — now review the code below in the same style)
+
+TASK:
+Review the following code. Write comments matching the
+format and teaching style of the examples above.
+
+FORMAT:
+One comment block per issue.
+Severity emoji + label first.
+What → Why it matters → Fix.
+
+[PASTE CODE HERE]
+```
+
+---
+
+#### USE CASE 3: Children's Story Pages
+
+```
+ROLE:
+You are a warm children's book author with 200+
+personalised books published for kids aged 3-8.
+
+CONTEXT:
+Writing for Arjun, age 5, who loves elephants.
+Theme: jungle adventure.
+Each page: exactly 3 sentences. Simple words only.
+
+FEW-SHOT EXAMPLES:
+Here are 2 examples of perfect story pages for this project.
+Match this tone, sentence length, and warmth exactly:
+
+Example Page (different child — do NOT copy this):
+PAGE 1:
+Mia loved butterflies more than anything in the world.
+She could name every colour and every wing shape by heart.
+One sunny morning, she found a tiny butterfly stuck in the rain.
+
+PAGE 2:
+"Don't worry," said Mia softly, "I'll help you fly again."
+She made a little shelter from a big green leaf.
+The butterfly looked up at her with tiny grateful eyes.
+
+Notice:
+- Child's name used in page 1 naturally
+- Simple words — no word over 2 syllables
+- Each sentence moves the story forward
+- Warm emotional tone throughout
+
+(End of examples — now write Arjun's story below)
+
+TASK:
+Write pages 1-8 for Arjun's jungle adventure story.
+Match the example quality, tone, and structure exactly.
+Use Arjun's name on every page. Include elephants in the plot.
+
+FORMAT:
+PAGE 1:
+[3 sentences]
+
+PAGE 2:
+[3 sentences]
+
+...continue to PAGE 8...
+
+MORAL: [One warm sentence beginning with "Remember:"]
+```
+
+---
+
+#### USE CASE 4: LinkedIn Posts
+
+```
+ROLE:
+You are a LinkedIn content strategist specialising in
+developer and tech lead audiences in India.
+You write posts that get 500+ reactions consistently.
+
+CONTEXT:
+Author: Tech Lead with Python/FastAPI/Next.js experience.
+Audience: Indian developers, tech leads, startup founders.
+Goal: Build audience around AI skills + side income journey.
+Tone: Direct, honest, no corporate fluff.
+
+FEW-SHOT EXAMPLES:
+Here are 2 examples of high-performing posts in this style:
+
+Example 1 — Tool post (high engagement):
+I automated something my team does 10 times a day.
+Writing git commit messages.
+
+Here's the exact workflow I built:
+1. Developer types: git agent-commit
+2. Script reads the staged diff automatically
+3. GPT-4o-mini generates a conventional commit message
+4. Shows: y / edit / regenerate / cancel
+5. Commits on confirmation
+
+Setup for whole team = 1 command.
+Built in 45 minutes.
+
+Which part of your dev workflow would you automate first? 👇
+
+Example 2 — Insight post (high shares):
+There are now 2 types of developers.
+
+Type A: Uses AI like a search engine.
+Vague questions → vague answers → same output as before.
+
+Type B: Uses AI like a force multiplier.
+Precise prompts → production output → 10x results.
+
+The tool is identical. The prompt is the difference.
+
+Which type are you right now? Be honest 👇
+
+(End of examples — now write a post about the topic below)
+
+TOPIC: [YOUR TOPIC HERE]
+
+TASK:
+Write a LinkedIn post matching the style, length,
+and engagement pattern of the examples above.
+Must end with a question to drive comments.
+
+FORMAT:
+Hook (1-2 lines — no preamble)
+[blank line]
+Body (numbered list OR short paragraphs — max 8 lines)
+[blank line]
+Closing question 👇
+```
+
+---
+
+## 🧠 ADVANCED TECHNIQUE 2 — CHAIN OF THOUGHT (CoT)
+
+### What Is It?
+
+Force the AI to **think step by step BEFORE answering.**
+Instead of jumping to output, it plans first.
+Planning = better structure, fewer errors, stronger logic.
+
+```
+┌─────────────────────────────────────────────────────────┐
+│  WITHOUT CHAIN OF THOUGHT                              │
+│  You ask → AI generates immediately                   │
+│  → Jumps to conclusion                                │
+│  → Misses edge cases                                  │
+│  → Inconsistent structure                             │
+│  → Surface-level answer                               │
+│                                                         │
+│  WITH CHAIN OF THOUGHT                                 │
+│  You ask → AI plans first → then generates            │
+│  → Considers all angles                               │
+│  → Catches its own mistakes in planning               │
+│  → Consistent, logical structure                      │
+│  → Deeper, more accurate answer                       │
+└─────────────────────────────────────────────────────────┘
+```
+
+### The 3 Ways To Trigger CoT:
+
+```
+METHOD 1 — Magic phrase (simplest):
+Add "Think step by step before answering" to any prompt.
+
+METHOD 2 — Explicit planning step:
+Add a CHAIN OF THOUGHT section before your TASK:
+"Before answering, think through:
+ - Step 1: [what to consider first]
+ - Step 2: [what to consider next]
+ - Step 3: [what to conclude]
+Then write your answer."
+
+METHOD 3 — Scratchpad style:
+"First write your reasoning in a THINKING block.
+Then write your final answer in an ANSWER block."
+```
+
+---
+
+### CHAIN OF THOUGHT EXAMPLES — By Use Case
+
+---
+
+#### USE CASE 1: Architecture Decision
+
+```
+ROLE:
+You are a senior solutions architect with 10+ years
+experience in Python FastAPI + Next.js production systems.
+
+CONTEXT:
+Building a personalised children's storybook service.
+Expected load: 50-100 orders/month initially.
+Team: 1 developer. Budget: minimal (free tiers preferred).
+Story generation takes 5-10 seconds (OpenAI API call).
+
+CHAIN OF THOUGHT — Work through this before answering:
+Step 1: Should story generation be synchronous or async?
+        Consider: 5-10 second wait · user experience · complexity
+Step 2: Where should order data be stored?
+        Consider: free tier · simplicity · query needs · scale
+Step 3: What is the biggest technical risk?
+        Consider: API failures · cost spikes · data loss
+Step 4: What should be built first vs deferred?
+        Consider: what's needed for first paid order
+
+TASK:
+After working through the above, recommend:
+1. Sync vs async story generation (with reason)
+2. Database recommendation (with reason)
+3. Top 3 technical risks and mitigations
+4. Week-by-week build order for first month
+
+FORMAT:
+## Decisions
+| Decision | Recommendation | Reason |
+|----------|---------------|--------|
+
+## Technical Risks
+| Risk | Likelihood | Mitigation |
+|------|------------|------------|
+
+## Build Order
+Week 1: [what + why first]
+Week 2: [what + why]
+Week 3: [what + why]
+Week 4: [what + why]
+```
+
+---
+
+#### USE CASE 2: Debugging Complex Errors
+
+```
+ROLE:
+You are a senior Python debugger who finds root causes,
+never just symptoms. You think like a detective.
+
+CONTEXT:
+FastAPI backend + OpenAI API integration.
+Error appears intermittently — not every request.
+Started after adding async to the endpoint.
+
+CHAIN OF THOUGHT — Reason through this before answering:
+Step 1: What are ALL possible causes of this error type?
+        List them before picking one.
+Step 2: Which causes are consistent with "intermittent"?
+        Eliminate causes that would fail EVERY time.
+Step 3: Which cause is most likely given async was just added?
+        Focus on race conditions, event loop issues.
+Step 4: What is the minimum change to confirm your hypothesis?
+        Suggest a test before suggesting a full fix.
+
+TASK:
+After reasoning through the above:
+1. List all possible root causes (before picking one)
+2. Eliminate unlikely ones with reasoning
+3. State the most probable cause with confidence level
+4. Suggest one diagnostic test to confirm
+5. Then provide the fix
+
+FORMAT:
+## All Possible Causes
+[numbered list]
+
+## Eliminated (and why)
+[what you ruled out + reason]
+
+## Most Probable Cause
+[specific cause + confidence: High/Medium/Low]
+
+## Diagnostic Test
+[exact code or command to confirm]
+
+## Fix
+[code block with explanation]
+
+Error:
+[PASTE ERROR HERE]
+
+Relevant code:
+[PASTE CODE HERE]
+```
+
+---
+
+#### USE CASE 3: Story Structure Planning
+
+```
+ROLE:
+You are a children's book author and story structure expert.
+
+CONTEXT:
+Writing a personalised 8-page storybook.
+Child: Arjun, age 5, loves elephants.
+Theme: jungle adventure.
+
+CHAIN OF THOUGHT — Plan the story before writing it:
+Step 1: Who is Arjun at the start? What does he want?
+        (Setup — pages 1-2)
+Step 2: What problem stops him from getting it?
+        Must involve the jungle. Must feel real to a 5 year old.
+        (Problem — pages 3-4)
+Step 3: How does the problem get WORSE before it gets better?
+        What makes him doubt himself?
+        (Challenge — pages 5-6)
+Step 4: How do elephants specifically help solve the problem?
+        Not just appear — they must be the KEY to the solution.
+        (Solution — page 7)
+Step 5: What does Arjun learn? What is the warm takeaway?
+        One simple lesson a 5-year-old can remember.
+        (Resolution + Moral — page 8)
+
+TASK:
+After planning the above, write the full 8-page story.
+Each page: exactly 3 sentences.
+Simple words only. Arjun's name on every page.
+
+FORMAT:
+## Story Plan (2 lines only — internal planning)
+[brief plan]
+
+## Story
+
+PAGE 1:
+[3 sentences]
+
+...continue to PAGE 8...
+
+MORAL: [One warm sentence beginning with "Remember:"]
+```
+
+---
+
+#### USE CASE 4: Code Refactoring Decision
+
+```
+ROLE:
+You are a senior Python engineer and clean code advocate.
+
+CONTEXT:
+FastAPI endpoint that handles story generation requests.
+Currently: 80-line function doing validation + business
+logic + API calls + file saving + response formatting.
+Team is mid-level. Code is hard to test.
+
+CHAIN OF THOUGHT — Think before refactoring:
+Step 1: What are the distinct RESPONSIBILITIES in this function?
+        List every separate concern you can identify.
+Step 2: Which responsibilities should be separate functions?
+        Apply Single Responsibility Principle.
+Step 3: What is the safest refactor order?
+        What to extract first to reduce risk of breaking things?
+Step 4: What needs a unit test BEFORE refactoring begins?
+        (Never refactor without a safety net)
+
+TASK:
+After thinking through the above:
+1. List the responsibilities you identified
+2. Show the proposed function breakdown
+3. Recommend refactor order with reasoning
+4. Write the 3 most important unit tests to write first
+
+FORMAT:
+## Responsibilities Found
+[numbered list]
+
+## Proposed Function Breakdown
+[function names + 1-line description each]
+
+## Refactor Order
+1. [first + why]
+2. [second + why]
+3. [third + why]
+
+## Unit Tests To Write First
+[3 test function signatures with docstrings]
+
+[PASTE CURRENT FUNCTION HERE]
+```
+
+---
+
+## 💥 COMBINING BOTH — FEW-SHOT + CHAIN OF THOUGHT
+
+This is the most powerful combination.
+Use it for your most important, high-stakes prompts.
+
+```
+┌─────────────────────────────────────────────────────────┐
+│  FEW-SHOT tells the AI:                                │
+│  "This is what perfect output looks like"              │
+│                                                         │
+│  CHAIN OF THOUGHT tells the AI:                        │
+│  "This is how to THINK before producing it"            │
+│                                                         │
+│  COMBINED:                                             │
+│  AI knows both the destination AND the route           │
+│  = Most consistent, highest quality output possible    │
+└─────────────────────────────────────────────────────────┘
+```
+
+### Combined Example — Story Generator (Production Version):
+
+```
+ROLE:
+You are a warm children's book author with 200+
+personalised storybooks published for kids aged 3-8.
+
+CONTEXT:
+Child: {child_name}, age {age}, loves {favourite_thing}.
+Theme: {theme}. Will be printed as a real physical book.
+
+CHAIN OF THOUGHT — Plan before writing:
+Step 1: What is {child_name}'s goal in this story?
+Step 2: What obstacle will they face?
+Step 3: How does {favourite_thing} help solve it?
+Step 4: What is the simple warm lesson at the end?
+
+FEW-SHOT EXAMPLE — Match this quality exactly:
+(This is for a different child — do not copy the content)
+
+PAGE 1:
+Mia loved butterflies more than anything in the world.
+She could name every colour and every wing shape by heart.
+One sunny morning, she found a tiny butterfly stuck in the rain.
+
+PAGE 2:
+"Don't worry," said Mia softly, "I'll help you fly again."
+She made a shelter from a big green leaf and waited patiently.
+The butterfly looked up at her with tiny grateful eyes.
+
+Notice in this example:
+→ Child's name in sentence 1 naturally
+→ 3 sentences exactly — no more, no less
+→ Simple words — nothing over 2 syllables
+→ Each sentence moves the story forward
+
+(End of example — now write {child_name}'s story)
+
+TASK:
+Write an 8-page story. Rules:
+1. Exactly 3 sentences per page
+2. Simple words a {age}-year-old understands
+3. {child_name}'s name on every page naturally
+4. {favourite_thing} must help solve the main problem
+5. Structure: pages 1-2 setup → 3-4 problem →
+   5-6 challenge → 7 solution → 8 ending
+
+FORMAT:
+Return ONLY this structure. No preamble. No plan visible.
+
+PAGE 1:
+[3 sentences]
+
+PAGE 2:
+[3 sentences]
+
+PAGE 3:
+[3 sentences]
+
+PAGE 4:
+[3 sentences]
+
+PAGE 5:
+[3 sentences]
+
+PAGE 6:
+[3 sentences]
+
+PAGE 7:
+[3 sentences]
+
+PAGE 8:
+[3 sentences]
+
+MORAL: [One warm sentence beginning with "Remember:"]
+```
+
+---
+
+## 🎯 WHICH TECHNIQUE TO USE WHEN
+
+```
+┌──────────────────────┬────────────────┬────────────────────┐
+│ SITUATION            │ TECHNIQUE      │ REASON             │
+├──────────────────────┼────────────────┼────────────────────┤
+│ Need consistent      │ FEW-SHOT       │ AI matches your    │
+│ format every time    │                │ example exactly    │
+├──────────────────────┼────────────────┼────────────────────┤
+│ Complex logic or     │ CHAIN OF       │ Forces planning    │
+│ multi-step reasoning │ THOUGHT        │ before output      │
+├──────────────────────┼────────────────┼────────────────────┤
+│ High quality output  │ BOTH COMBINED  │ Best of both —     │
+│ that must be perfect │                │ quality + thinking │
+├──────────────────────┼────────────────┼────────────────────┤
+│ Simple factual       │ NEITHER        │ Overhead not       │
+│ questions            │                │ needed             │
+├──────────────────────┼────────────────┼────────────────────┤
+│ Creative brainstorm  │ CHAIN OF       │ Explore angles     │
+│                      │ THOUGHT only   │ before committing  │
+└──────────────────────┴────────────────┴────────────────────┘
+```
+
+---
+
+## 🔴 VAGUE → ✅ OPTIMIZED — Side by Side Examples
+
+---
+
+### 1. CODE REVIEW
+
+❌ **Vague:**
+```
+review my code
+```
+
+✅ **Optimized (4-Layer + Few-Shot):**
+```
+ROLE:
+You are a senior Python engineer specialising in FastAPI,
+clean architecture, and secure file handling.
+
+CONTEXT:
+FastAPI backend called from Next.js frontend.
+Team: mid-level. Priority: Security → Readability → Performance.
+
+FEW-SHOT EXAMPLE — Write comments in this exact style:
+🔴 HIGH: Hardcoded credentials detected (line 12)
+What: AWS keys embedded in source code.
+Why: Anyone with repo access can access your S3 bucket.
+Fix: Use os.getenv("AWS_ACCESS_KEY_ID") instead.
+
+TASK:
+Review for: 1.Security 2.Error handling 3.Clean code 4.Testability
+
+FORMAT:
+## Summary (2 lines max)
+## Issues Found
+| # | Issue | Category | Severity 🔴🟡🟢 | Fix |
+|---|-------|----------|----------------|-----|
+## What's Good (max 3 bullets)
+## Refactored Version (code block)
+
+[PASTE CODE HERE]
+```
+
+---
+
+### 2. BUG FIXING
+
+❌ **Vague:**
+```
+fix this bug
+```
+
+✅ **Optimized (4-Layer + CoT):**
+```
+ROLE:
+You are a senior Python/FastAPI debugger who finds
+root causes not symptoms.
+
+CONTEXT:
+Stack: Python 3.11 + FastAPI + OpenAI API
+Error: intermittent, started after adding async.
+
+CHAIN OF THOUGHT:
+Step 1: List ALL possible causes of this error
+Step 2: Eliminate causes inconsistent with "intermittent"
+Step 3: Most likely cause given async was just added?
+Step 4: Minimum test to confirm hypothesis?
+
+TASK:
+1. All possible causes
+2. Eliminated ones + why
+3. Most probable cause + confidence
+4. Diagnostic test to confirm
+5. The fix
+
+FORMAT:
+## Possible Causes → ## Eliminated → ## Most Probable
+## Diagnostic Test → ## Fix (code block)
+
+[ERROR] [CODE]
+```
+
+---
+
+### 3. DOCUMENTATION
+
+❌ **Vague:**
+```
+document this API
+```
+
+✅ **Optimized (4-Layer + Few-Shot):**
+```
+ROLE:
+You are a technical writer for developer REST API docs.
+
+CONTEXT:
+Audience: mid-level devs joining the team.
+They know Python + REST but not this codebase.
+Format: GitHub-flavoured Markdown for README.md
+
+FEW-SHOT EXAMPLE — Match this doc style exactly:
+### POST /health
+Returns service status.
+**Response:** `{"status": "ok", "service": "story-generator"}`
+
+### POST /generate-story
+Generates a personalised children's story.
+**Request Body:**
+| Field | Type | Required | Example |
+|-------|------|----------|---------|
+| child_name | string | ✅ | "Arjun" |
+| age | integer | ✅ | 5 |
+
+(End of example — now document the endpoint below)
+
+TASK:
+Document the endpoint covering:
+1. Overview 2. Request fields table 3. Response fields
+4. Error codes 5. curl example 6. Python example
+
+FORMAT: GitHub Markdown. Tables for fields. Code blocks for examples.
+
+[PASTE ENDPOINT CODE HERE]
+```
+
+---
+
+## ⚙️ TEMPERATURE GUIDE
+
+```
+┌───────────────┬──────────────────────────────────────────┐
+│ TEMPERATURE   │ USE FOR                                  │
+├───────────────┼──────────────────────────────────────────┤
+│ 0.0 - 0.2     │ Code generation, bug fixing,             │
+│ (Precise)     │ commit messages, data extraction         │
+├───────────────┼──────────────────────────────────────────┤
+│ 0.3 - 0.5     │ Code refactoring, documentation,         │
+│ (Balanced)    │ PR descriptions, technical writing       │
+├───────────────┼──────────────────────────────────────────┤
+│ 0.6 - 0.8     │ Story generation, marketing copy,        │
+│ (Creative)    │ brainstorming, social posts              │
+├───────────────┼──────────────────────────────────────────┤
+│ 0.9 - 1.0     │ Creative writing, poetry,                │
+│ (Wild)        │ unexpected angles, idea explosion        │
+└───────────────┴──────────────────────────────────────────┘
+```
+
+---
+
+## 📋 MASTER TEMPLATE — All Techniques Combined
+
+```
+ROLE:
+You are a [specific expert with specific specialisation].
+
+CONTEXT:
+[Project type] · Stack: [tech] · Team: [level]
+Priority: [what matters most] · Constraints: [limits]
+
+CHAIN OF THOUGHT — Think through this before answering:
+Step 1: [what to consider first]
+Step 2: [what to consider next]
+Step 3: [what to conclude before writing]
+
+FEW-SHOT EXAMPLE — Match this quality exactly:
+[your example of perfect output]
+[label what makes it good]
+(End of example — now do the real task below)
+
+TASK:
+[numbered specific asks — not vague]
+1. [specific ask]
+2. [specific ask]
+3. [specific ask]
+
+FORMAT:
+[exact structure you want back]
+[labels, tables, code blocks as needed]
+
+[PASTE YOUR CONTENT HERE]
+```
+
+---
+
+## 🔥 THE 60-SECOND PAUSE
+
+Before hitting send on ANY prompt:
+
+```
+✅ ROLE:     Specific expert? Not just "AI assistant"?
+✅ CONTEXT:  Stack? Team? Constraints? Priority order?
+✅ CoT:      Should I force step-by-step thinking first?
+✅ FEW-SHOT: Do I have an example of perfect output?
+✅ TASK:     Numbered and specific? Not open-ended?
+✅ FORMAT:   Exact structure specified? Table? Code block?
+
+If ANY is NO → fix before sending.
+```
+
+---
+
+## 🎯 ANTI-PATTERNS — Never Do These
+
+```
+┌─────────────────────────────┬─────────────────────────────┐
+│ ANTI-PATTERN                │ WHY IT FAILS                │
+├─────────────────────────────┼─────────────────────────────┤
+│ "Make it better"            │ Better at what? For whom?   │
+├─────────────────────────────┼─────────────────────────────┤
+│ No format specified         │ Wall of text = slow to use  │
+├─────────────────────────────┼─────────────────────────────┤
+│ Paste 500 lines "review all"│ AI loses focus — be specific│
+├─────────────────────────────┼─────────────────────────────┤
+│ No few-shot for format tasks│ Output varies every time    │
+├─────────────────────────────┼─────────────────────────────┤
+│ No CoT for complex logic    │ AI jumps → misses edge cases│
+├─────────────────────────────┼─────────────────────────────┤
+│ "Write me a full app"       │ Too big — break into pieces │
+└─────────────────────────────┴─────────────────────────────┘
+```
+
+---
