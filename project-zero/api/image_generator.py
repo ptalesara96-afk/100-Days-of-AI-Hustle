@@ -72,7 +72,7 @@ def generate_single_image(
     """
     try:
         response = client.images.generate(
-            model="dall-e-3",         # Use dall-e-3 on free tier
+            model="gpt-image-1",         # Use dall-e-3 on free tier
             prompt=prompt,            # Switch to gpt-image-1 on paid
             size="1024x1024",
             quality="standard",
